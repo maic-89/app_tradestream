@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Crear Cuenta TradeStream</h2>
+        
+        <form id="registroForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Usuario</label>
+                <input type="text" id="usuario" name="usuario" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Edad</label>
+                    <input type="number" id="edad" name="edad" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                    <input type="text" id="direccion" name="direccion" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition">Registrar Usuario</button>
+        </form>
+        <div id="mensaje" class="mt-4 text-center text-sm hidden"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registroForm');
+        const mensajeDiv = document.getElementById('mensaje');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Recopilamos los datos según tu UsuarioCreate Schema
+            const formData = {
+                usuario: document.getElementById('usuario').value,
+                contrasena: document.getElementById('contrasena').value,
+                nombre: document.getElementById('nombre').value,
+                apellidos: document.getElementById('apellidos').value,
+                correo: document.getElementById('correo').value,
+                edad: parseInt(document.getElementById('edad').value),
+                direccion: document.getElementById('direccion').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/usuarios/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    mensajeDiv.textContent = "¡Usuario registrado con éxito!";
+                    mensajeDiv.className = "mt-4 text-center text-sm text-green-600";
+                    form.reset();
+                } else {
+                    mensajeDiv.textContent = "Error: " + (result.detail || "No se pudo registrar");
+                    mensajeDiv.className = "mt-4 text-center text-sm text-red-600";
+                }
+                mensajeDiv.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

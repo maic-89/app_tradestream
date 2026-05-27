@@ -7,7 +7,7 @@ class UsuarioCreate(BaseModel):
     nombre: str
     apellidos: str
     correo: str
-    edad: str
+    edad: int
     direccion: str
 
 class UsuarioResponse(BaseModel):
@@ -16,8 +16,11 @@ class UsuarioResponse(BaseModel):
         correo: str
 
         class Config:
-            from_atributes = True
+            from_attributes = True
 
 class login_usuario(BaseModel):
     usuario: str
     contrasena: str
+
+    class Config:
+        from_attributes = True

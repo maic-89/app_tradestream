@@ -21,3 +21,4 @@ class Producto(Base):
     inventarios = relationship("Inventario", back_populates="producto")
     kardex = relationship("Kardex", back_populates="producto")
     
+    
