@@ -11,8 +11,8 @@ def crear_usuario_servicio(db, usuario):
 def listar_usuario_servicio(db):
     return listar_usuarios(db)
 
-def login_usuario(db, username: str, contrasena: str):
-    usuario_db = obtener_usuario_por_username(db, username)
+def login_usuario(db, usuario: str, contrasena: str):
+    usuario_db = obtener_usuario_por_username(db, usuario)
     
     if not usuario_db:
         return None

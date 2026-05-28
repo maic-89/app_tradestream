@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="ship" class="w-8 h-8"></i>
+            <span class="text-xl font-bold tracking-wider">TradeStream</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <span id="userDisplay" class="text-sm bg-blue-700 px-3 py-1 rounded-full flex items-center gap-1">
+                <i data-lucide="user" class="w-4 h-4"></i> Usuario
+            </span>
+            <button id="logoutBtn" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-1 p-8 max-w-7xl mx-auto w-full">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Panel de Control General</h1>
+            <p class="text-gray-600">Sistema de Gestión de Compras Internacionales</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+            <a href="/usuario_db" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition">
+                    <i data-lucide="check-square"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Crear Nuevo Usuario</h3>
+                <p class="text-xs text-gray-500">Crear acceso a nuevo usuario del sistema.</p>
+            </a>
+            
+            <a href="/pedidos" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+                    <i data-lucide="shopping-cart"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Pedidos</h3>
+                <p class="text-xs text-gray-500">Gestión de órdenes de compra y requerimientos.</p>
+            </a>
+
+            <a href="/embarques" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-600 group-hover:text-white transition">
+                    <i data-lucide="truck"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Embarques</h3>
+                <p class="text-xs text-gray-500">Seguimiento de contenedores y tránsito internacional.</p>
+            </a>
+
+            <a href="/productos" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition">
+                    <i data-lucide="package"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Productos</h3>
+                <p class="text-xs text-gray-500">Catálogo maestro de mercancías y partidas arancelarias.</p>
+            </a>
+
+            <a href="/inventario" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-yellow-600 group-hover:text-white transition">
+                    <i data-lucide="warehouse"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Inventario</h3>
+                <p class="text-xs text-gray-500">Stock actual en bodegas y centros de distribución.</p>
+            </a>
+
+            <a href="/kardex" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-600 group-hover:text-white transition">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Kardex</h3>
+                <p class="text-xs text-gray-500">Historial detallado de movimientos de entrada y salida.</p>
+            </a>
+
+            <a href="/proveedores" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-teal-100 text-teal-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-teal-600 group-hover:text-white transition">
+                    <i data-lucide="users"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Proveedores</h3>
+                <p class="text-xs text-gray-500">Directorio de fabricantes externos y partners logísticos.</p>
+            </a>
+
+            <a href="/recepcion" class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md border border-gray-200 hover:border-blue-500 transition group">
+                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:bg-orange-600 group-hover:text-white transition">
+                    <i data-lucide="check-square"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">Recepción</h3>
+                <p class="text-xs text-gray-500">Control de calidad y entrada de mercancía a aduana/bodega.</p>
+            </a>
+
+        </div>
+    </main>
+
+    <script>
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // Seguridad Básica del Frontend
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Si no hay token, patitas a la calle (al login)
+            window.location.href = '/login';
+        }
+
+        // Manejo del Cierre de Sesión
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        });
+    </script>
+</body>
+</html>

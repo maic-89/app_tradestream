@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+        <h2 class="text-2xl font-bold mb-6 text-center text-blue-600">Iniciar Sesión</h2>
+        
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Usuario</label>
+                <input type="text" id="usuario" name="usuario" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition">Ingresar</button>
+        </form>
+        
+        <div id="mensaje" class="mt-4 text-center text-sm hidden"></div>
+        
+        <div class="mt-6 text-center text-xs text-gray-500">
+            ¿No tienes cuenta? <a href="/registro" class="text-blue-500 hover:underline">Regístrate aquí</a>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const mensajeDiv = document.getElementById('mensaje');
+
+        //botones para login
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = new FormData(form);
+            
+            // Adaptamos los datos al formato x-www-form-urlencoded exigido por OAuth2PasswordRequestForm
+            const formData = {
+                usuario: data.get('usuario'),
+                contrasena: data.get('contrasena')
+            };
+
+            try {
+                const response = await fetch('/api/v1/usuarios/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    mensajeDiv.textContent = "¡Autenticación exitosa! Redirigiendo...";
+                    mensajeDiv.className = "mt-4 text-center text-sm text-green-600";
+                    mensajeDiv.classList.remove('hidden');
+
+                    // Guardamos el token de acceso en el navegador
+                    if (result.access_token) {
+                        localStorage.setItem('token', result.access_token);
+                    } 
+                                        
+                    setTimeout(() => {
+                        window.location.href = '/dashboard'; 
+                    }, 1500);
+
+                } else {
+                    // Si el backend responde con un error estructurado 422
+                    if (Array.isArray(result.detail)) {
+                        const errores = result.detail.map(err => `${err.loc[1] || err.loc[0]}: ${err.msg}`).join(', ');
+                        mensajeDiv.textContent = "Error en campos -> " + errores;
+                    } else {
+                        mensajeDiv.textContent = "Error: " + (result.detail || "Credenciales incorrectas");
+                    }
+                    mensajeDiv.className = "mt-4 text-center text-sm text-red-600";
+                    mensajeDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error', error);
+                mensajeDiv.textContent = "Error de conexión con el servidor";
+                mensajeDiv.className = "mt-4 text-center text-sm text-red-600";
+                mensajeDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

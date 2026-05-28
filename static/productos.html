@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="package" class="w-7 h-7"></i>
+            <a href="/dashboard" class="text-xl font-bold tracking-wider hover:text-blue-200 transition">TradeStream</a>
+            <span class="text-blue-300">/ Catálogo de Productos</span>
+        </div>
+        <a href="/dashboard" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Panel
+        </a>
+    </nav>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Maestro de Productos y Aranceles</h1>
+                <p class="text-sm text-gray-500">Administra el portafolio de mercancías importadas, costos base e impuestos arancelarios.</p>
+            </div>
+            <div id="notificacion" class="hidden px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-md"><i data-lucide="boxes"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Total Referencias en Catálogo</p><h3 id="totalProductos" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-md"><i data-lucide="pie-chart"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Costo Promedio de Importación (Neto)</p><h3 id="promedioCosto" class="text-xl font-bold text-purple-700">$0</h3></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-1">
+                    <i data-lucide="package-plus" class="text-blue-600"></i> Registrar Producto
+                </h2>
+                
+                <form id="productoForm" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Nombre del Producto</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej. Laptop HP ZBook G10" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Descripción / Ficha Técnica</label>
+                        <input type="text" id="descripcion" name="descripcion" placeholder="Procesador, RAM, Partida arancelaria..." class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Proveedor Internacional</label>
+                        <select id="proveedor_id" name="proveedor_id" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Cargando proveedores...</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Valor Neto (FOB/CIF)</label>
+                            <input type="number" step="0.01" id="valor_neto" name="valor_neto" placeholder="0.00" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 uppercase">Impuestos / Arancel (%)</label>
+                            <input type="number" step="0.01" id="impuestos" name="impuestos" placeholder="Ej. 19 o 10" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase">Valor Bruto (Calculado Automático)</label>
+                        <input type="number" step="0.01" id="valor_bruto" name="valor_bruto" readonly placeholder="0.00" class="mt-1 block w-full bg-gray-200 border border-gray-300 rounded-md p-2 text-sm font-bold text-gray-700 cursor-not-allowed">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-medium p-2.5 rounded-md hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="save" class="w-4 h-4"></i> Guardar Producto
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 lg:col-span-2 flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-1">
+                        <i data-lucide="folder-open" class="text-blue-600"></i> Fichas Activas
+                    </h2>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="tablaBuscar" placeholder="Buscar por nombre o descripción..." class="w-full border border-gray-300 bg-gray-50 rounded-md pl-8 pr-3 py-1.5 text-xs focus:ring-blue-500 focus:border-blue-500">
+                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="text-xs uppercase bg-gray-100 text-gray-600 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3">ID</th>
+                                <th class="px-4 py-3">Nombre / Especificación</th>
+                                <th class="px-4 py-3">Proveedor</th>
+                                <th class="px-4 py-3 text-right">V. Neto</th>
+                                <th class="px-4 py-3 text-center">Arancel</th>
+                                <th class="px-4 py-3 text-right text-blue-700 font-bold">V. Bruto</th>
+                                <th class="px-4 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productosTableBody" class="divide-y divide-gray-100 text-gray-700 text-xs">
+                            <tr>
+                                <td colspan="7" class="text-center py-8 text-gray-400">Cargando catálogo maestro...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; }
+
+        const productoForm = document.getElementById('productoForm');
+        const TableBody = document.getElementById('productosTableBody');
+        const selectProveedor = document.getElementById('proveedor_id');
+        const notificacion = document.getElementById('notificacion');
+
+        const inputNeto = document.getElementById('valor_neto');
+        const inputImpuestos = document.getElementById('impuestos');
+        const inputBruto = document.getElementById('valor_bruto');
+
+        function mostrarAlerta(msg, esError = false) {
+            notificacion.textContent = msg;
+            notificacion.className = esError 
+                ? "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-red-100 text-red-700 block"
+                : "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-green-100 text-green-700 block";
+            setTimeout(() => notificacion.className = "hidden", 4000);
+        }
+
+        // --- CALCULO AUTOMÁTICO EN TIEMPO REAL ---
+        function calcularValorBruto() {
+            const neto = parseFloat(inputNeto.value) || 0;
+            const impPorcentaje = parseFloat(inputImpuestos.value) || 0;
+            // Bruto = Neto + (Neto * Porcentaje / 100)
+            const bruto = neto + (neto * (impPorcentaje / 100));
+            inputBruto.value = bruto.toFixed(2);
+        }
+        inputNeto.addEventListener('input', calcularValorBruto);
+        inputImpuestos.addEventListener('input', calcularValorBruto);
+
+        // 1. Cargar lista de Proveedores para el Dropdown
+        async function cargarProveedores() {
+            try {
+                const res = await fetch('/api/v1/proveedores/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const proveedores = await res.json();
+                    selectProveedor.innerHTML = '<option value="">Seleccione el proveedor...</option>';
+                    proveedores.forEach(p => {
+                        selectProveedor.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+                    });
+                }
+            } catch (err) {
+                console.error("Error cargando proveedores:", err);
+            }
+        }
+
+        // 2. Cargar y Renderizar Catálogo de Productos desde la API
+        async function cargarProductos() {
+            try {
+                const res = await fetch('/api/v1/productos/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!res.ok) throw new Error("Error leyendo base de datos");
+                
+                const datos = await res.json();
+                TableBody.innerHTML = '';
+                
+                if(datos.length === 0) {
+                    TableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-400">No hay productos registrados en el catálogo.</td></tr>`;
+                    actualizarMetricas([]);
+                    return;
+                }
+
+                datos.forEach(prod => {
+                    TableBody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-4 py-3 font-mono text-gray-400">#PRD-${prod.id}</td>
+                            <td class="px-4 py-3">
+                                <div class="font-bold text-gray-900">${prod.nombre}</div>
+                                <div class="text-[11px] text-gray-400 truncate max-w-xs">${prod.descripcion || 'Sin ficha'}</div>
+                            </td>
+                            <td class="px-4 py-3 text-gray-600 font-medium">${prod.proveedor?.nombre || 'ID Proveedor: ' + prod.proveedor_id}</td>
+                            <td class="px-4 py-3 text-right font-mono text-gray-600">$${prod.valor_neto.toLocaleString()}</td>
+                            <td class="px-4 py-3 text-center font-mono text-gray-500">${prod.impuestos}%</td>
+                            <td class="px-4 py-3 text-right font-mono font-bold text-blue-700">$${prod.valor_bruto.toLocaleString()}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="eliminarProducto(${prod.id})" class="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition" title="Inactivar Ficha">
+                                    <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                actualizarMetricas(datos);
+                lucide.createIcons();
+
+            } catch (err) {
+                TableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-red-500 font-medium">Error al conectar con la API de Productos.</td></tr>`;
+            }
+        }
+
+        // 3. Crear Registro de Producto (POST)
+        productoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(productoForm);
+
+            const payload = {
+                nombre: data.get('nombre'),
+                descripcion: data.get('descripcion') || null,
+                proveedor_id: parseInt(data.get('proveedor_id')),
+                valor_neto: parseFloat(data.get('valor_neto')),
+                impuestos: parseFloat(data.get('impuestos')),
+                valor_bruto: parseFloat(data.get('valor_bruto')) // Envía el campo calculado
+            };
+
+            try {
+                const res = await fetch('/api/v1/productos/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("¡Producto añadido con éxito al catálogo maestro!");
+                    productoForm.reset();
+                    cargarProductos();
+                } else {
+                    const errData = await res.json();
+                    mostrarAlerta("Error: " + (errData.detail || "No se pudo registrar la ficha"), true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error crítico en la comunicación con FastAPI.", true);
+            }
+        });
+
+        // 4. Eliminar / Descontinuar Producto
+        async function eliminarProducto(id) {
+            if (!confirm("¿Desea descontinuar este producto del catálogo maestro? Asegúrese de que no tenga movimientos activos en el Kardex o Inventario.")) return;
+
+            try {
+                const res = await fetch(`/api/v1/productos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("Producto descontinuado del catálogo.");
+                    cargarProductos();
+                } else {
+                    mostrarAlerta("No se pudo borrar (Posible integridad referencial con Kardex/Inventario).", true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error de red al intentar borrar.", true);
+            }
+        }
+
+        // 5. Calcular KPIs
+        function actualizarMetricas(datos) {
+            document.getElementById('totalProductos').textContent = datos.length;
+            
+            if (datos.length > 0) {
+                const sumaNeto = datos.reduce((acc, p) => acc + p.valor_neto, 0);
+                const promedio = sumaNeto / datos.length;
+                document.getElementById('promedioCosto').textContent = `$${Math.round(promedio).toLocaleString()}`;
+            } else {
+                document.getElementById('promedioCosto').textContent = "$0";
+            }
+        }
+
+        // 6. Buscador Dinámico por Nombre o Ficha
+        document.getElementById('tablaBuscar').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const filas = TableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < filas.length; i++) {
+                const celdaInfo = filas[i].getElementsByTagName('td')[1]; // Columna Nombre/Descripción
+                if (celdaInfo) {
+                    const texto = celdaInfo.textContent || celdaInfo.innerText;
+                    filas[i].style.display = texto.toLowerCase().includes(query) ? "" : "none";
+                }
+            }
+        });
+
+        // Inicio
+        cargarProveedores();
+        cargarProductos();
+    </script>
+</body>
+</html>

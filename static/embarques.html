@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embarques - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="truck" class="w-7 h-7"></i>
+            <a href="/dashboard" class="text-xl font-bold tracking-wider hover:text-blue-200 transition">TradeStream</a>
+            <span class="text-blue-300">/ Tránsito y Embarques</span>
+        </div>
+        <a href="/dashboard" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Panel
+        </a>
+    </nav>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Seguimiento de Embarques Internacionales</h1>
+                <p class="text-sm text-gray-500">Controla rutas, números de guía aduanera, contenedores y tiempos de tránsito.</p>
+            </div>
+            <div id="notificacion" class="hidden px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-md"><i data-lucide="ship"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">En Tránsito Internacional</p><h3 id="countTransito" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-yellow-100 text-yellow-600 rounded-md"><i data-lucide="anchor"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">En Aduana / Puerto</p><h3 id="countAduana" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-md"><i data-lucide="check-circle"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Entregados</p><h3 id="countEntregado" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-1">
+                    <i data-lucide="plus-circle" class="text-blue-600"></i> Despachar Embarque
+                </h2>
+                
+                <form id="embarqueForm" class="space-y-3">
+                    <div>

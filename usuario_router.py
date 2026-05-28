@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from usuario_schema import UsuarioCreate, UsuarioResponse, login_usuario as LoginSchema
 from usuario_servicio import crear_usuario_servicio, listar_usuario_servicio, login_usuario as login_func
+from fastapi.security import OAuth2PasswordRequestForm
 
-router = APIRouter(prefix="/usuarios", tags=["Usuarios"])
+router = APIRouter(tags=["Usuarios"])
 
 def get_db():
     db = SessionLocal()
@@ -13,8 +14,8 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/login")
-def login_endpoint(datos: LoginSchema = Body(...), db: Session = Depends(get_db)):
+@router.post("/usuario_db/login")
+def login_endpoint(datos: LoginSchema, db: Session = Depends(get_db)):
     resultado = login_func(db, datos.usuario, datos.contrasena)
    
     if not resultado:
@@ -27,7 +28,7 @@ def login_endpoint(datos: LoginSchema = Body(...), db: Session = Depends(get_db)
 
 @router.post("/", response_model=UsuarioResponse)
 def crear_usuario(usuario: UsuarioCreate, db: Session = Depends(get_db)):
-    return crear_usuario_servicio(db, usuario)
+    return crear_usuario_servicio(db, usuario) 
 
 @router.get("/", response_model=list[UsuarioResponse])
 def listar_usuarios(db: Session = Depends(get_db)):

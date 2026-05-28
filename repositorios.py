@@ -19,5 +19,5 @@ def crear_usuario(db: Session, usuario: Usuario):
 def listar_usuarios(db: Session):
     return db.query(Usuario).all()
 
-def obtener_usuario_por_username(db: Session, usuario_id: int):
-    return db.query(Usuario).filter(Usuario.id == Usuario).first()
+def obtener_usuario_por_username(db: Session, username: str):
+    return db.query(Usuario).filter(Usuario.usuario == username).first()

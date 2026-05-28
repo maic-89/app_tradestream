@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="ship" class="w-7 h-7"></i>
+            <a href="/dashboard" class="text-xl font-bold tracking-wider hover:text-blue-200 transition">TradeStream</a>
+            <span class="text-blue-300">/ Módulo Pedidos</span>
+        </div>
+        <a href="/dashboard" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Panel
+        </a>
+    </nav>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Órdenes de Compra Internacional</h1>
+                <p class="text-sm text-gray-500">Administra, crea y monitorea los requerimientos de importación.</p>
+            </div>
+            <div id="notificacion" class="hidden px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-yellow-100 text-yellow-600 rounded-md"><i data-lucide="clock"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Pendientes</p><h3 id="countPendiente" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-md"><i data-lucide="package"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">En Tránsito</p><h3 id="countTransito" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-md"><i data-lucide="check-circle"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Recibidos</p><h3 id="countRecibido" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-1">
+                    <i data-lucide="plus-circle" class="text-blue-600"></i> Registrar Pedido
+                </h2>
+                
+                <form id="pedidoForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Proveedor Internacional</label>
+                        <select id="proveedor_id" name="proveedor_id" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Seleccione un proveedor...</option>
+                            </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Bodega de Destino</label>
+                        <input type="text" id="bodega_destino" name="bodega_destino" placeholder="Ej. Bodega Principal - Zona Franca" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Precio Total (USD)</label>
+                        <div class="relative mt-1 rounded-md shadow-sm">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span class="text-gray-500 sm:text-sm">$</span>
+                            </div>
+                            <input type="number" step="0.01" id="precio_total" name="precio_total" placeholder="0.00" required class="block w-full bg-gray-50 border border-gray-300 rounded-md pl-7 p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Fecha Estimada de Entrega</label>
+                        <input type="date" id="fecha_entrega" name="fecha_entrega" class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-medium p-2.5 rounded-md hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="save" class="w-4 h-4"></i> Generar Pedido
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 lg:col-span-2 flex flex-col">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-1">
+                        <i data-lucide="list" class="text-blue-600"></i> Listado de Órdenes
+                    </h2>
+                    <div class="relative w-48 sm:w-64">
+                        <input type="text" id="tablaBuscar" placeholder="Buscar bodega..." class="w-full border border-gray-300 bg-gray-50 rounded-md pl-8 pr-3 py-1.5 text-xs focus:ring-blue-500 focus:border-blue-500">
+                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="text-xs uppercase bg-gray-100 text-gray-600 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3">ID</th>
+                                <th class="px-4 py-3">Proveedor</th>
+                                <th class="px-4 py-3">Destino</th>
+                                <th class="px-4 py-3">Total</th>
+                                <th class="px-4 py-3">Estado</th>
+                                <th class="px-4 py-3">Fecha</th>
+                                <th class="px-4 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pedidosTableBody" class="divide-y divide-gray-100 text-gray-700">
+                            <tr>
+                                <td colspan="7" class="text-center py-8 text-gray-400">Cargando registros...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Inicializar iconos visuales
+        lucide.createIcons();
+
+        // 1. Verificación estricta de seguridad
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; }
+
+        // Elementos de la UI
+        const pedidoForm = document.getElementById('pedidoForm');
+        const TableBody = document.getElementById('pedidosTableBody');
+        const selectProveedor = document.getElementById('proveedor_id');
+        const notificacion = document.getElementById('notificacion');
+
+        // Función para decodificar usuario_id desde el JWT (Seguridad del Modelo)
+        function obtenerUsuarioIdDesdeToken() {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const payload = JSON.parse(window.atob(base64));
+                // Suponiendo que guardas el id del usuario en una propiedad o usaremos un id por defecto si tu backend lo asume automáticamente en las rutas protegidas.
+                return payload.user_id || 1; 
+            } catch (e) {
+                return 1;
+            }
+        }
+
+        // 2. Utilidad para alertas dinámicas
+        function mostrarAlerta(msg, esError = false) {
+            notificacion.textContent = msg;
+            notificacion.className = esError 
+                ? "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-red-100 text-red-700 block"
+                : "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-green-100 text-green-700 block";
+            setTimeout(() => notificacion.className = "hidden", 4000);
+        }
+
+        // 3. Cargar lista de proveedores en el formulario SELECT
+        async function cargarProveedores() {
+            try {
+                const res = await fetch('/api/v1/proveedores/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const proveedores = await res.json();
+                    selectProveedor.innerHTML = '<option value="">Seleccione un proveedor...</option>';
+                    proveedores.forEach(p => {
+                        selectProveedor.innerHTML += `<option value="${p.id}">${p.nombre}</option>`;
+                    });
+                }
+            } catch (err) {
+                console.error("Error cargando proveedores:", err);
+            }
+        }
+
+        // 4. Obtener y Renderizar Pedidos de la API
+        async function cargarPedidos() {
+            try {
+                const res = await fetch('/api/v1/pedidos/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!res.ok) throw new Error("No se pudo obtener el listado");
+                
+                const pedidos = await res.json();
+                TableBody.innerHTML = '';
+                
+                if(pedidos.length === 0) {
+                    TableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-gray-400">No se encontraron órdenes registradas.</td></tr>`;
+                    actualizarMetricas([]);
+                    return;
+                }
+
+                pedidos.forEach(p => {
+                    // Configuración estética de las etiquetas de estado según tu columna SQLAlchemy
+                    let estadoClass = "bg-yellow-100 text-yellow-800";
+                    if (p.estado === "transito" || p.estado === "enviado") estadoClass = "bg-blue-100 text-blue-800";
+                    if (p.estado === "recibido" || p.estado === "completado") estadoClass = "bg-green-100 text-green-800";
+
+                    const fechaFormateada = new Date(p.fecha_pedido).toLocaleDateString('es-CO');
+
+                    TableBody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-4 py-3 font-semibold text-blue-600">#${p.id}</td>
+                            <td class="px-4 py-3">${p.proveedor?.nombre || 'Proveedor #' + p.proveedor_id}</td>
+                            <td class="px-4 py-3 font-medium text-gray-600">${p.bodega_destino}</td>
+                            <td class="px-4 py-3 font-bold text-gray-900">$${p.precio_total.toFixed(2)}</td>
+                            <td class="px-4 py-3">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${estadoClass}">${p.estado}</span>
+                            </td>
+                            <td class="px-4 py-3 text-xs text-gray-500">${fechaFormateada}</td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="eliminarPedido(${p.id})" class="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition" title="Eliminar Orden">
+                                    <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                actualizarMetricas(pedidos);
+                lucide.createIcons();
+
+            } catch (err) {
+                TableBody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-red-500 font-medium">Error al conectar con la API de pedidos.</td></tr>`;
+            }
+        }
+
+        // 5. Envío de datos al Backend (Mapeo directo al modelo SQLAlchemy)
+        pedidoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(pedidoForm);
+
+            const payload = {
+                usuario_id: obtenerUsuarioIdDesdeToken(), // Relación con tu Modelo
+                proveedor_id: parseInt(data.get('proveedor_id')),
+                bodega_destino: data.get('bodega_destino'),
+                precio_total: parseFloat(data.get('precio_total')),
+                estado: "pendiente", // Valor default coincidente
+                fecha_entrega: data.get('fecha_entrega') ? new Date(data.get('fecha_entrega')).toISOString() : null
+            };
+
+            try {
+                const res = await fetch('/api/v1/pedidos/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("¡Orden internacional creada con éxito!");
+                    pedidoForm.reset();
+                    cargarPedidos();
+                } else {
+                    const errorData = await res.json();
+                    mostrarAlerta("Error: " + (errorData.detail || "No se pudo crear la orden"), true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error crítico en la conexión del servidor.", true);
+            }
+        });
+
+        // 6. Eliminar Registro (Respeta el cascade="all, delete-orphan" de tu Modelo)
+        async function eliminarPedido(id) {
+            if (!confirm(`¿Está seguro de cancelar y eliminar de forma permanente la orden #${id}?`)) return;
+
+            try {
+                const res = await fetch(`/api/v1/pedidos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("Pedido eliminado correctamente.");
+                    cargarPedidos();
+                } else {
+                    mostrarAlerta("No se pudo eliminar el registro.", true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error en la petición de eliminación.", true);
+            }
+        }
+
+        // 7. Actualizador de KPIs en la UI
+        function actualizarMetricas(pedidos) {
+            const pend = pedidos.filter(p => p.estado === 'pendiente').length;
+            const tran = pedidos.filter(p => p.estado === 'transito' || p.estado === 'enviado').length;
+            const reci = pedidos.filter(p => p.estado === 'recibido' || p.estado === 'completado').length;
+
+            document.getElementById('countPendiente').textContent = pend;
+            document.getElementById('countTransito').textContent = tran;
+            document.getElementById('countRecibido').textContent = reci;
+        }
+
+        // 8. Buscador en vivo integrado en la tabla
+        document.getElementById('tablaBuscar').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const filas = TableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < filas.length; i++) {
+                const celdaDestino = filas[i].getElementsByTagName('td')[2];
+                if (celdaDestino) {
+                    const texto = celdaDestino.textContent || celdaDestino.innerText;
+                    filas[i].style.display = texto.toLowerCase().includes(query) ? "" : "none";
+                }
+            }
+        });
+
+        // Carga inicial al cargar el DOM
+        cargarProveedores();
+        cargarPedidos();
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kardex de Inventario - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="clipboard-list" class="w-7 h-7"></i>
+            <a href="/dashboard" class="text-xl font-bold tracking-wider hover:text-blue-200 transition">TradeStream</a>
+            <span class="text-blue-300">/ Kardex Valorizado</span>
+        </div>
+        <a href="/dashboard" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Panel
+        </a>
+    </nav>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Libro de Movimientos (Kardex)</h1>
+                <p class="text-sm text-gray-500">Auditoría completa de entradas, salidas, saldos valorizados y documentos de comercio exterior asociados.</p>
+            </div>
+            <div id="notificacion" class="hidden px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-md"><i data-lucide="trending-up"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Total Unidades Entradas</p><h3 id="totalEntradas" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-red-100 text-red-600 rounded-md"><i data-lucide="trending-down"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Total Unidades Salidas</p><h3 id="totalSalidas" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-purple-100 text-purple-600 rounded-md"><i data-lucide="dollar-sign"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Valor Total del Saldo</p><h3 id="totalValorizado" class="text-xl font-bold text-purple-700">$0</h3></div>
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 pb-4 border-b border-gray-100">
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-

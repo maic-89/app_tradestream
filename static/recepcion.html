@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recepción de Mercancía - TradeStream</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <nav class="bg-blue-600 text-white shadow-md px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <i data-lucide="check-square" class="w-7 h-7"></i>
+            <a href="/dashboard" class="text-xl font-bold tracking-wider hover:text-blue-200 transition">TradeStream</a>
+            <span class="text-blue-300">/ Recepción de Mercancía</span>
+        </div>
+        <a href="/dashboard" class="bg-blue-700 hover:bg-blue-800 px-4 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver al Panel
+        </a>
+    </nav>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Control y Entrada de Mercancía</h1>
+                <p class="text-sm text-gray-500">Registra el ingreso físico de contenedores y órdenes de compra internacionales a puerto o bodega.</p>
+            </div>
+            <div id="notificacion" class="hidden px-4 py-2 rounded-md text-sm font-medium shadow-sm transition"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-green-100 text-green-600 rounded-md"><i data-lucide="clipboard-check"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Recepciones Registradas</p><h3 id="totalRecepciones" class="text-xl font-bold text-gray-800">0</h3></div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-4">
+                <div class="p-3 bg-blue-100 text-blue-600 rounded-md"><i data-lucide="calendar"></i></div>
+                <div><p class="text-xs text-gray-500 font-medium">Último Ingreso</p><h3 id="ultimaFecha" class="text-xl font-bold text-gray-800">N/A</h3></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-1">
+                    <i data-lucide="file-plus" class="text-blue-600"></i> Registrar Ingreso
+                </h2>
+                
+                <form id="recepcionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Orden de Pedido Asociada</label>
+                        <select id="pedido_id" name="pedido_id" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Cargando órdenes pendientes...</option>
+                        </select>
+                        <p class="text-[11px] text-gray-400 mt-1">Sólo se muestran pedidos aprobados o en tránsito internacional.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 uppercase">Fecha de Recepción Física</label>
+                        <input type="date" id="fecha_recepcion" name="fecha_recepcion" required class="mt-1 block w-full bg-gray-50 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white font-medium p-2.5 rounded-md hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-sm">
+                        <i data-lucide="check-circle-2" class="w-4 h-4"></i> Confirmar Entrada
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 lg:col-span-2 flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 flex items-center gap-1">
+                        <i data-lucide="history" class="text-blue-600"></i> Historial de Ingresos a Aduana/Bodega
+                    </h2>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="tablaBuscar" placeholder="Buscar por número de pedido..." class="w-full border border-gray-300 bg-gray-50 rounded-md pl-8 pr-3 py-1.5 text-xs focus:ring-blue-500 focus:border-blue-500">
+                        <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-gray-400">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="text-xs uppercase bg-gray-100 text-gray-600 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3">ID Registro</th>
+                                <th class="px-4 py-3">Pedido N°</th>
+                                <th class="px-4 py-3">Bodega Destino</th>
+                                <th class="px-4 py-3">Fecha de Ingreso</th>
+                                <th class="px-4 py-3 text-center">Estado Logístico</th>
+                                <th class="px-4 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recepcionTableBody" class="divide-y divide-gray-100 text-gray-700">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-gray-400">Cargando historial logístico...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // Autenticación de ruta
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/login'; }
+
+        // Elementos DOM
+        const recepcionForm = document.getElementById('recepcionForm');
+        const TableBody = document.getElementById('recepcionTableBody');
+        const selectPedido = document.getElementById('pedido_id');
+        const notificacion = document.getElementById('notificacion');
+
+        // Establecer por defecto la fecha del día de hoy en el formulario
+        document.getElementById('fecha_recepcion').valueToDate = new Date();
+        document.getElementById('fecha_recepcion').value = new Date().toISOString().substring(0, 10);
+
+        function mostrarAlerta(msg, esError = false) {
+            notificacion.textContent = msg;
+            notificacion.className = esError 
+                ? "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-red-100 text-red-700 block"
+                : "px-4 py-2 rounded-md text-sm font-medium shadow-sm bg-green-100 text-green-700 block";
+            setTimeout(() => notificacion.className = "hidden", 4000);
+        }
+
+        // 1. Cargar Pedidos para el menú desplegable (Select)
+        async function cargarPedidosDisponibles() {
+            try {
+                const res = await fetch('/api/v1/pedidos/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const pedidos = await res.json();
+                    selectPedido.innerHTML = '<option value="">Seleccione la orden a recibir...</option>';
+                    
+                    // Mostramos todos los pedidos para facilitar las pruebas del prototipo
+                    pedidos.forEach(p => {
+                        selectPedido.innerHTML += `<option value="${p.id}">Orden #${p.id} - Destino: ${p.bodega_destino} ($${p.precio_total})</option>`;
+                    });
+                }
+            } catch (err) {
+                console.error("Error cargando pedidos:", err);
+            }
+        }
+
+        // 2. Cargar historial desde la API de recepciones
+        async function cargarHistorialRecepcion() {
+            try {
+                const res = await fetch('/api/v1/recepcion/', { // Cambia esto según el prefijo exacto de tu router
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!res.ok) throw new Error("Error en la petición del servidor");
+                
+                const datos = await res.json();
+                TableBody.innerHTML = '';
+                
+                if(datos.length === 0) {
+                    TableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-400">No hay ingresos registrados en el sistema.</td></tr>`;
+                    actualizarMetricas([]);
+                    return;
+                }
+
+                datos.forEach(item => {
+                    // Formatear fechas de forma amigable
+                    const fechaArribo = new Date(item.fecha_recepcion).toLocaleDateString('es-CO', { timeZone: 'UTC' });
+
+                    TableBody.innerHTML += `
+                        <tr class="hover:bg-gray-50 transition duration-150">
+                            <td class="px-4 py-3 font-semibold text-gray-500">#REC-${item.id}</td>
+                            <td class="px-4 py-3 font-bold text-blue-600">Pedido #${item.pedido_id}</td>
+                            <td class="px-4 py-3 text-gray-600">${item.pedido?.bodega_destino || 'Carga General'}</td>
+                            <td class="px-4 py-3 font-medium text-gray-700">${fechaArribo}</td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                    Ingresado con éxito
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <button onclick="eliminarRecepcion(${item.id})" class="text-red-500 hover:text-red-700 p-1 rounded-md hover:bg-red-50 transition" title="Anular Entrada">
+                                    <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                actualizarMetricas(datos);
+                lucide.createIcons();
+
+            } catch (err) {
+                TableBody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-red-500 font-medium">Error al conectar con la API de recepciones.</td></tr>`;
+            }
+        }
+
+        // 3. Crear registro de recepción (POST)
+        recepcionForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = new FormData(recepcionForm);
+
+            const payload = {
+                pedido_id: parseInt(data.get('pedido_id')),
+                fecha_recepcion: data.get('fecha_recepcion') // Formato YYYY-MM-DD mapeado al Date de SQLAlchemy
+            };
+
+            try {
+                const res = await fetch('/api/v1/recepcion/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("¡Ingreso de mercancía guardado en el sistema!");
+                    recepcionForm.reset();
+                    document.getElementById('fecha_recepcion').value = new Date().toISOString().substring(0, 10);
+                    cargarHistorialRecepcion();
+                } else {
+                    const errData = await res.json();
+                    mostrarAlerta("Error: " + (errData.detail || "No se pudo registrar la entrada"), true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error crítico al enviar los datos.", true);
+            }
+        });
+
+        // 4. Eliminar / Anular Registro
+        async function eliminarRecepcion(id) {
+            if (!confirm("¿Está seguro de anular esta recepción? Se eliminará el registro de auditoría de la base de datos.")) return;
+
+            try {
+                const res = await fetch(`/api/v1/recepcion/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    mostrarAlerta("Registro de recepción eliminado.");
+                    cargarHistorialRecepcion();
+                } else {
+                    mostrarAlerta("No se pudo completar la operación.", true);
+                }
+            } catch (err) {
+                mostrarAlerta("Error en la conexión de red.", true);
+            }
+        }
+
+        // 5. Actualizar Widgets informativos
+        function actualizarMetricas(datos) {
+            document.getElementById('totalRecepciones').textContent = datos.length;
+            
+            if (datos.length > 0) {
+                // Ordenar por fecha para encontrar la más reciente
+                const fechas = datos.map(d => new Date(d.fecha_recepcion));
+                const maxFecha = new Date(Math.max.apply(null, fechas));
+                document.getElementById('ultimaFecha').textContent = maxFecha.toLocaleDateString('es-CO', { timeZone: 'UTC' });
+            } else {
+                document.getElementById('ultimaFecha').textContent = "N/A";
+            }
+        }
+
+        // 6. Buscador por número de pedido en la tabla
+        document.getElementById('tablaBuscar').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            const filas = TableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < filas.length; i++) {
+                const celdaPedido = filas[i].getElementsByTagName('td')[1]; // Columna del número de pedido
+                if (celdaPedido) {
+                    const texto = celdaPedido.textContent || celdaPedido.innerText;
+                    filas[i].style.display = texto.toLowerCase().includes(query) ? "" : "none";
+                }
+            }
+        });
+
+        // Inicialización de la pantalla al entrar
+        cargarPedidosDisponibles();
+        cargarHistorialRecepcion();
+    </script>
+</body>
+</html>
